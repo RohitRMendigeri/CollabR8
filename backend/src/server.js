@@ -23,10 +23,20 @@ app.get('/', (req, res) => {
 
 
 
+const startServer = async () => {
+  try {
+    await connectDB();
+    if (ENV.NODE_ENV !== "production") {
+      app.listen(ENV.PORT, () => {
+        console.log("Server started on port:", ENV.PORT);
+      });
+    }
+  } catch (error) {
+    console.error("Error starting server:", error);
+    process.exit(1); // Exit the process with a failure code
+  }
+};
 
+startServer();
 
-
-app.listen(PORT, () =>{
-  console.log(`server is running on port ${PORT}`);
-  connectDB();
-});
+export default app;

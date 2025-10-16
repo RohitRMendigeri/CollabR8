@@ -8,17 +8,21 @@ const syncFunction = inngest.createFunction(
     {id:"sync-user"},
     {event:"clerk/user.created"},
     async ({event}) => {
-        await connectDB();
+            await connectDB();
 
-        const {id , email_addresses, first_name, profile_image_url} = event.data; 
+            const { id, email_addresses, first_name, last_name, profile_image_url } = event.data;
 
-        const newUser = {
-            clerkID : id,
-            email : email_addresses[0]?.email_address,
-            name : `${first_name || ""} ${last_name || ""}`,
-            image : profile_image_url
-        }
-        await User.create(newUser);
+            // Build a safe display name from available fields
+            const name = [first_name, last_name].filter(Boolean).join(' ').trim();
+
+            const newUser = {
+                clerkID: id,
+                email: email_addresses?.[0]?.email_address,
+                name: name || undefined,
+                image: profile_image_url
+            };
+
+            await User.create(newUser);
     }
 );
 

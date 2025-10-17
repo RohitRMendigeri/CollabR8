@@ -1,26 +1,38 @@
+import '../instrument.mjs'; // Sentry instrumentation should be the first import
 import express from 'express';
 import {ENV} from './config/env.js'; 
 import {connectDB} from './config/db.js';
 import { clerkMiddleware } from "@clerk/express";
 import {functions, inngest} from './config/inngest.js';
 import { serve } from "inngest/express";
+
+import chatRoutes from './routes/chat.route.js';
+import * as Sentry from "@sentry/node";
+
+
 // load env vars from backend/.env (if present)
 
 
 const app = express();
+const PORT = ENV.PORT || 5001;
+
 
 app.use(express.json()); // to parse json request body
 app.use(clerkMiddleware()); // req.auth will be available in the request object
 
-
-app.use("/api/inngest", serve({ client: inngest, functions }));
-// use PORT from env
-const PORT = ENV.PORT || 5001;
+app.get("/debug-sentry", function mainHandler(req, res) {
+  throw new Error("My first Sentry error!");
+});
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
+
+app.use("/api/inngest", serve({ client: inngest, functions }));
+app.use("/api/chat", chatRoutes);
+
+Sentry.setupExpressErrorHandler(app);
 
 
 const startServer = async () => {

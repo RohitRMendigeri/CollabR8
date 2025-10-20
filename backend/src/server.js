@@ -20,7 +20,7 @@ const PORT = ENV.PORT || 5001;
 
 app.use(express.json()); // to parse json request body
 
-app.use(cors({origin : "http://localhost:5173", credentials: true})); // enable CORS for frontend dev server , allowing client to send cookies
+app.use(cors({origin : ENV.CLIENT_URL, credentials: true})); // enable CORS for frontend dev server , allowing client to send cookies
 app.use(clerkMiddleware()); // req.auth will be available in the request object
 
 app.get("/debug-sentry", function mainHandler(req, res) {

@@ -30,6 +30,8 @@ const syncFunction = inngest.createFunction(
                 name: newUser.name,
                 image: newUser.image
             });
+
+        await addUserToPublicChannels(newUser.clerkID.toString());
     }
 );
 
